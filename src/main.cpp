@@ -56,6 +56,21 @@ int main(int argc, char* argv[]) {
     
     int client_fd = accept(server_fd, reinterpret_cast<struct sockaddr*>(&client_addr), &client_addr_len);
     std::cout << "Client connected\n";
+
+    int32_t message_size = htonl(0);
+    int32_t correlation_id = htonl(7);
+
+    ssize_t message_size_bytes = send(client_fd, &message_size, sizeof(message_size), 0);
+    ssize_t correlation_id_bytes = send(client_fd, &correlation_id, sizeof(correlation_id), 0);
+
+    if (message_size_bytes == -1) {
+        std::cerr << "[WARN] Failed to send `message_size` to client\n";
+    }
+
+    if (correlation_id_bytes == -1) {
+        std::cerr << "[WARN] Failed to send `correlation_id` to client\n";
+    }
+
     close(client_fd);
 
     close(server_fd);
